@@ -17,7 +17,6 @@ import {
   Button,
   useColorScheme,
   View,
-  FlatList,
 } from 'react-native';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
@@ -101,11 +100,11 @@ function App(): React.JSX.Element {
                 }
               }}
             />
-            <FlatList
-              data={summaryText.split('\n')}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({item}) => <Text style={styles.result}>{item}</Text>}
-            />
+            {summaryText.split('\n').map((item, index) => (
+              <Text style={styles.result} key={index}>
+                {item}
+              </Text>
+            ))}
           </View>
         </View>
       </ScrollView>
