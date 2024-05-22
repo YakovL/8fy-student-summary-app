@@ -7,6 +7,7 @@
 
 import React, {useState} from 'react';
 import {
+  Dimensions,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -60,6 +61,7 @@ function App(): React.JSX.Element {
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
+  const screenHeight = Dimensions.get('window').height;
 
   return (
     <SafeAreaView style={backgroundStyle}>
@@ -72,6 +74,7 @@ function App(): React.JSX.Element {
         style={backgroundStyle}>
         <View
           style={{
+            minHeight: screenHeight,
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
           <View style={styles.sectionContainer}>
