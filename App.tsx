@@ -5,58 +5,46 @@
  * @format
  */
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+import React, {useState} from 'react';
 import {
   SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
+  TextInput,
+  Button,
   useColorScheme,
   View,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+// TODO: generalize (cut off query, support different formats etc), use TS
+const getYtIdFromUrl = (url: string) => {
+  const parts = url.split('/');
+  return parts[parts.length - 1] || null;
+};
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+const apiBaseUrl = 'https://yakovlitvin.pro/8fy';
+const requestSummary = async (videoId: string) => {
+  try {
+    const response = await fetch(`${apiBaseUrl}/summary/${videoId}`);
+    return await response.text();
+  } catch (error) {
+    if (error instanceof Object && 'message' in error) {
+      return 'Something went wrong: ' + error.message;
+    } else {
+      return 'Something went wrong';
+    }
+  }
+};
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
+
+  const [urlInput, setUrlInput] = useState('');
+  const [summaryText, setSummaryText] = useState('');
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -71,25 +59,42 @@ function App(): React.JSX.Element {
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
-        <Header />
         <View
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+          <View style={styles.sectionContainer}>
+            <Text
+              style={[
+                styles.sectionTitle,
+                {
+                  color: isDarkMode ? Colors.white : Colors.black,
+                },
+              ]}>
+              8fy lecture summary
+            </Text>
+            <TextInput
+              style={styles.input}
+              value={urlInput}
+              onChangeText={setUrlInput}
+              placeholder="Insert video URL"
+            />
+            <Button
+              title="Get summary"
+              onPress={() => {
+                setSummaryText('loading..');
+                const videoId = getYtIdFromUrl(urlInput);
+                if (videoId) {
+                  requestSummary(videoId)
+                    .then(setSummaryText)
+                    .catch(() => setSummaryText('problem loading summary'));
+                } else {
+                  // TODO: indicate that the format is unknown
+                }
+              }}
+            />
+            <Text>{summaryText}</Text>
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -105,13 +110,16 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '600',
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
   highlight: {
     fontWeight: '700',
+  },
+  input: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    paddingHorizontal: 16,
+    marginTop: 24,
+    marginBottom: 16,
   },
 });
 
