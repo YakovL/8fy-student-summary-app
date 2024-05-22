@@ -83,6 +83,10 @@ function App(): React.JSX.Element {
             <Button
               title="Get summary"
               onPress={() => {
+                if (urlInput === '') {
+                  setSummaryText('Please set url or id');
+                  return;
+                }
                 setSummaryText('loading..');
                 const videoId = getYtIdFromUrl(urlInput);
                 if (videoId) {
