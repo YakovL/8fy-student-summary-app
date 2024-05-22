@@ -16,6 +16,7 @@ import {
   Button,
   useColorScheme,
   View,
+  FlatList,
 } from 'react-native';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
@@ -93,7 +94,11 @@ function App(): React.JSX.Element {
                 }
               }}
             />
-            <Text>{summaryText}</Text>
+            <FlatList
+              data={summaryText.split('\n')}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({item}) => <Text style={styles.result}>{item}</Text>}
+            />
           </View>
         </View>
       </ScrollView>
@@ -120,6 +125,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginTop: 24,
     marginBottom: 16,
+  },
+  result: {
+    marginTop: 12,
+    fontSize: 18,
   },
 });
 
