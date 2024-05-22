@@ -22,20 +22,10 @@ import {
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 
+// TODO: generalize (cut off query, support different formats etc), use TS
 const getYtIdFromUrl = (url: string) => {
-  // id already
-  if (!url.includes('/')) {
-    return url;
-  }
-  const urlObj = new URL(url);
-
-  if (urlObj.host === 'youtu.be') {
-    return urlObj.pathname.slice(1);
-  } else if (urlObj.host === 'www.youtube.com') {
-    return urlObj.searchParams.get('v') || null;
-  } else {
-    return null;
-  }
+  const parts = url.split('/');
+  return parts[parts.length - 1] || null;
 };
 
 const apiBaseUrl = 'https://yakovlitvin.pro/8fy';
@@ -91,7 +81,7 @@ function App(): React.JSX.Element {
               style={styles.input}
               value={urlInput}
               onChangeText={setUrlInput}
-              placeholder="Insert video URL or id"
+              placeholder="Insert video URL"
             />
             <Button
               title="Get summary"
