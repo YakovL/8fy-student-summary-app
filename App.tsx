@@ -101,19 +101,18 @@ function App(): React.JSX.Element {
             <Button
               title="Get summary"
               onPress={() => {
-                if (urlInput === '') {
-                  setSummaryText('Please set url or id');
+                const videoId = getYtIdFromUrl(urlInput);
+                if (!videoId) {
+                  setSummaryText(
+                    'Please insert a YouTube url or id (the currently used format is unsupported)',
+                  );
                   return;
                 }
+
                 setSummaryText('loading..');
-                const videoId = getYtIdFromUrl(urlInput);
-                if (videoId) {
-                  requestSummary(videoId)
-                    .then(setSummaryText)
-                    .catch(() => setSummaryText('problem loading summary'));
-                } else {
-                  // TODO: indicate that the format is unknown
-                }
+                requestSummary(videoId)
+                  .then(setSummaryText)
+                  .catch(() => setSummaryText('problem loading summary'));
               }}
             />
             <Text selectable style={styles.result}>
