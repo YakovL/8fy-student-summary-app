@@ -100,11 +100,9 @@ function App(): React.JSX.Element {
                 }
               }}
             />
-            {summaryText.split('\n').map((item, index) => (
-              <Text style={styles.result} key={index}>
-                {item}
-              </Text>
-            ))}
+            <Text selectable style={styles.result}>
+              {summaryText}
+            </Text>
           </View>
         </View>
       </ScrollView>
