@@ -21,10 +21,26 @@ import {
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 
-// TODO: generalize (cut off query, support different formats etc), use TS
 const getYtIdFromUrl = (url: string) => {
-  const parts = url.split('/');
-  return parts[parts.length - 1] || null;
+  // id itself
+  if (!url.includes('/')) {
+    return url;
+  }
+
+  const shortUrlMatch = /youtu.be\/(\w+)/.exec(url);
+  if (shortUrlMatch) {
+    return shortUrlMatch[1];
+  }
+
+  const longUrlMatch = /youtube.com\/watch\?([\w=&]+)/.exec(url);
+  if (longUrlMatch) {
+    const idMatch = /v=([^&]+)/.exec(longUrlMatch[1]);
+    if (idMatch) {
+      return idMatch[1];
+    }
+  }
+
+  return null;
 };
 
 const apiBaseUrl = 'https://yakovlitvin.pro/8fy';
