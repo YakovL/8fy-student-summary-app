@@ -92,12 +92,14 @@ function App(): React.JSX.Element {
               ]}>
               8fy lecture summary
             </Text>
+
             <TextInput
               style={styles.input}
               value={urlInput}
               onChangeText={setUrlInput}
               placeholder="Insert video URL or id"
             />
+
             <Button
               title="Get summary"
               onPress={() => {
@@ -115,6 +117,7 @@ function App(): React.JSX.Element {
                   .catch(() => setSummaryText('problem loading summary'));
               }}
             />
+
             <Text selectable style={styles.result}>
               {summaryText}
             </Text>
