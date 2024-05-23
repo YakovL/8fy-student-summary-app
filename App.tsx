@@ -96,7 +96,7 @@ function App(): React.JSX.Element {
               style={styles.input}
               value={urlInput}
               onChangeText={setUrlInput}
-              placeholder="Insert video URL"
+              placeholder="Insert video URL or id"
             />
             <Button
               title="Get summary"
