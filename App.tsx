@@ -51,15 +51,40 @@ const getYtIdFromUrl = (url: string) => {
 };
 
 const apiBaseUrl = 'https://yakovlitvin.pro/8fy';
-const requestSummary = async (videoId: string) => {
+const requestSummary = async (
+  videoId: string,
+  onResponseUpdate: (updater: (text: string) => string) => void,
+) => {
   try {
     const response = await fetch(`${apiBaseUrl}/summary/${videoId}`);
-    return await response.text();
+    const reader = response.body?.getReader();
+    if (!reader) {
+      const text = await response.text();
+      onResponseUpdate(() => text);
+      return;
+    }
+
+    const decoder = new TextDecoder();
+    while (true) {
+      const {done, value} = await reader.read();
+      if (done) {
+        break;
+      }
+
+      // Decode the chunk and update the summary text
+      onResponseUpdate(
+        prevText => prevText + decoder.decode(value, {stream: true}),
+      );
+    }
+
+    // Final decode to flush any remaining bytes
+    onResponseUpdate(prevText => prevText + decoder.decode());
   } catch (error) {
     if (error instanceof Object && 'message' in error) {
-      return 'Something went wrong: ' + error.message;
+      const msg = error.message;
+      onResponseUpdate(() => 'Something went wrong: ' + msg);
     } else {
-      return 'Something went wrong';
+      onResponseUpdate(() => 'Something went wrong');
     }
   }
 };
@@ -119,9 +144,11 @@ function App(): React.JSX.Element {
                 }
 
                 setSummaryText('loading..');
-                requestSummary(videoId)
-                  .then(setSummaryText)
-                  .catch(() => setSummaryText('problem loading summary'));
+                try {
+                  requestSummary(videoId, setSummaryText);
+                } catch (error) {
+                  setSummaryText('problem loading summary');
+                }
               }}
             />
 
