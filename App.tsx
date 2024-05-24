@@ -22,19 +22,26 @@ import {
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 const getYtIdFromUrl = (url: string) => {
+  // Currently it's always 11 chars, 9 were used earlier;
+  // keeping this less strict (9+) for forward compatibility
+  const youtubeVideoIdPattern = '[\\w-]{9,}';
+
   // id itself
-  if (!url.includes('/')) {
+  if (url.match(new RegExp(`^${youtubeVideoIdPattern}$`))) {
     return url;
   }
 
-  const shortUrlMatch = /youtu.be\/(\w+)/.exec(url);
+  const shortUrlPattern = `youtu.be/(${youtubeVideoIdPattern})`;
+  const shortUrlMatch = new RegExp(shortUrlPattern).exec(url);
   if (shortUrlMatch) {
     return shortUrlMatch[1];
   }
 
-  const longUrlMatch = /youtube.com\/watch\?([\w=&]+)/.exec(url);
+  const longUrlPattern = 'youtube.com/watch?(.+)$';
+  const longUrlMatch = new RegExp(longUrlPattern).exec(url);
   if (longUrlMatch) {
-    const idMatch = /v=([^&]+)/.exec(longUrlMatch[1]);
+    const queryPattern = `v=(${youtubeVideoIdPattern})`;
+    const idMatch = new RegExp(queryPattern).exec(longUrlMatch[1]);
     if (idMatch) {
       return idMatch[1];
     }
