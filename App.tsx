@@ -18,6 +18,7 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
+import {polyfill as polyfillFetch} from 'react-native-polyfill-globals/src/fetch';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 
@@ -56,7 +57,11 @@ const requestSummary = async (
   onResponseUpdate: (updater: (text: string) => string) => void,
 ) => {
   try {
-    const response = await fetch(`${apiBaseUrl}/summary/${videoId}`);
+    const response = await polyfillFetch(`${apiBaseUrl}/summary/${videoId}`, {
+      reactNative: {textStreaming: true},
+    });
+    // TODO: use  const stream = await response.body;
+    // and learn how to handle it (non standard, see https://github.com/react-native-community/fetch)
     const reader = response.body?.getReader();
     if (!reader) {
       const text = await response.text();
